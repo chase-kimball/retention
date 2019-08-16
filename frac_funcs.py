@@ -20,7 +20,7 @@ parser.add_argument('-N','--Nsamps',type=int,
 parser.add_argument('-maxkick','--maxkick', action='store_true')
 parser.add_argument('-Na','--Na', type = int, default = 10)
 parser.add_argument('-Nq','--Nq', type = int, default = 10)
-
+parser.add_argument('-l','--label',type = str, default='')
 ###############################
 
 def _get_kicks(amag1,amag2,q,Nsamps,maxkick):
@@ -43,9 +43,7 @@ def retention_fraction(a1a2q,vescs,Nsamps,maxkick=True):
     print(maxkick)
     a1,a2,q = a1a2q
     v_kicks = _get_kicks(a1,a2,q,Nsamps,maxkick)
-    print(len(v_kicks),len(vescs))
     vesc_samples = np.random.choice(vescs,Nsamps)
-    print(vesc_samples)
     return float(len(np.where(v_kicks<
                               vesc_samples)[0]))/len(v_kicks)
 
@@ -73,6 +71,7 @@ if __name__ == '__main__':
     print('Running cluster model  with Plummer radius {0} and  mass {1} \n{2} samples per grid-node and maxkick = {3}'.format(radius_str,mass_str,args.Nsamps,args.maxkick))
     
     fracs = run_retention_grid(args.Na,args.Nq,v_escs,args.Nsamps,args.maxkick)
+    np.savetxt(args.out_directory+'/retention_fractions_'+args.label+tag,fracs)
 
 
 

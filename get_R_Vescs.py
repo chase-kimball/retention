@@ -7,10 +7,18 @@ import pandas as pd
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--mass', type=float,required=True)
-parser.add_argument('--radius', type=float,required=True)
-parser.add_argument('--Nsamps', type=int,default=1000)
+parser.add_argument('--mass', type=float,
+                    help = 'Cluster mass in units of solar mass.'
+                    required=True)
+parser.add_argument('--radius', type=float,
+                    help = 'Plummer radius a_p in parsecs.\
+                            Half-mass radius ~1.3 a_p.\
+                            Virial radius ~1.7 a_p.'
+                           required=True)
+parser.add_arguemnt('-out','--out-directory', type = str)
 
+parser.add_argument('--Nsamps', type=int,default=1000)
+parser.add_argument('
 args=parser.parse_args()
 
 cluster = plummer_model.Plummer_pdf(args.radius,args.mass)
