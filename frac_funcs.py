@@ -2,6 +2,7 @@ import numpy as np
 import precession as pr
 import argparse
 import itertools
+import pdb
 import pandas as pd
 ####### Parse Arguments #######
 
@@ -28,37 +29,43 @@ def _get_kicks(amag1,amag2,q,Nsamps,maxkick):
     v_kicks = []
 
     M,m1,m2,S1,S2 = pr.get_fixed(q,amag1,amag2)
-    
+    t1 = np.random.uniform(-1,1,Nsamps)
+    t2 = np.random.uniform(-1,1,Nsamps)
+    phi = np.random.uniform(0,2*np.pi,Nsamps)
     for ii in range(Nsamps):
-        v_kicks.append(
-                      pr.finalkick(np.arccos(np.random.uniform(-1,1)),
-                                   np.arccos(np.random.uniform(-1,1)),
-                                   np.random.uniform(0,2*np.pi),
+        kick =  pr.finalkick(np.arccos(t1[ii]),np.arccos(t2[ii]),phi[ii],
                                    q,S1,S2,maxkick=maxkick,kms=True
                                    )
-                      )
+                      
+
+
+
+
+        v_kicks.append(kick)
+
     return np.array(v_kicks)
 
 def retention_fraction(a1a2q,vescs,Nsamps,maxkick=True):
-    print(maxkick)
     a1,a2,q = a1a2q
     v_kicks = _get_kicks(a1,a2,q,Nsamps,maxkick)
+    v_mean = np.mean(v_kicks)
+    v_median = np.median(v_kicks)
     vesc_samples = np.random.choice(vescs,Nsamps)
     return float(len(np.where(v_kicks<
-                              vesc_samples)[0]))/len(v_kicks)
-
+                              vesc_samples)[0]))/len(v_kicks),v_mean,v_median
+    
 def run_retention_grid(Na, Nq, vescs, Nsamps, maxkick):
     a1s = np.linspace(0,1,Na)
     a2s = np.linspace(0,1,Na)
-    qs = np.linspace(.01,1,Nq)
+    qs = np.linspace(.001,1,Nq)
     
     A1A2Q =list(itertools.product(a1s,a2s,qs))
  #   A1A2Q = np.array(A1A2Q)    
     for ii in range(len(A1A2Q)):
-        rf = retention_fraction(A1A2Q[ii],vescs,Nsamps,maxkick)
-        A1A2Q[ii]=np.append(A1A2Q[ii],[rf])
-        print(A1A2Q[ii][-1])
-                        
+        print(ii)
+        rf, v_mean, v_median = retention_fraction(A1A2Q[ii],vescs,Nsamps,maxkick)
+        A1A2Q[ii]=np.append(A1A2Q[ii],[rf,v_mean,v_median])
+        print(A1A2Q[ii])
     A1A2Q_Retention = A1A2Q
     return A1A2Q_Retention
 if __name__ == '__main__':
