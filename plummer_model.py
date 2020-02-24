@@ -20,14 +20,14 @@ class Plummer_pdf(rv_continuous):
         # r, abulge in parsecs
         #Mcluster in Msun
         # plummer density model * 4pi*r**2 divided by Mcluster
-        # Turns mass density function to probability density function.
+        # Turns mass density function**2 to probability density function.
         
         # rvs() requires _pdf normalized to 1 on domain, which in this case is [0,inf]
         # Leaving Mcluster in there normalizes to Mcluster. Check normalization by printing Plummer_pdf.cdf(big number)
         # WARNING: Cluster_pdf.cdf(np.inf) will always return 1 because it assumes we normalized correctly
         
 
-        return 3.*(r**2)*(self.a_plum**-3)*(1.+(r/self.a_plum)**2)**(-5./2.)
+        return (3.*(r**2)*(self.a_plum**-3)*(1.+(r/self.a_plum)**2)**(-5./2.))**2 * 256.*self.a_plum / (27.*np.pi)
     def potential(self, r):
         #a, a_plum in parsecs
         #Mcluster in Msun

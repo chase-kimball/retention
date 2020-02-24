@@ -31,6 +31,7 @@ def _get_kicks(amag1,amag2,q,Nsamps,maxkick):
     v_kicks = []
 
     M,m1,m2,S1,S2 = pr.get_fixed(q,amag1,amag2)
+
     t1 = np.random.uniform(-1,1,Nsamps)
     t2 = np.random.uniform(-1,1,Nsamps)
     phi = np.random.uniform(0,2*np.pi,Nsamps)
@@ -49,10 +50,14 @@ def _get_kicks(amag1,amag2,q,Nsamps,maxkick):
 
 def retention_fraction(a1a2q,vescs,Nsamps,maxkick=True):
     a1,a2,q = a1a2q
+    #Sample kicks
     v_kicks = _get_kicks(a1,a2,q,Nsamps,maxkick)
     v_mean = np.mean(v_kicks)
     v_median = np.median(v_kicks)
+
+    # Sample merger locations and escape velocities
     vesc_samples = np.random.choice(vescs,Nsamps)
+    # Get fraction of samples where v_kick < v_escape
     return float(len(np.where(v_kicks<
                               vesc_samples)[0]))/len(v_kicks),v_mean,v_median
     
